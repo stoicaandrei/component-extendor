@@ -1,5 +1,6 @@
-import {Args, Command, Flags} from '@oclif/core'
+import {Args, Command} from '@oclif/core'
 import * as fs from 'node:fs'
+import {capitalize} from '../../utils'
 
 export default class Hello extends Command {
   static description = 'Say hello'
@@ -9,15 +10,13 @@ export default class Hello extends Command {
 `,
   ]
 
-  static flags = {}
-
   static args = {
     category: Args.string({description: 'Component category', required: true}),
     name: Args.string({description: 'Component name', required: true}),
   }
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(Hello)
+    const {args} = await this.parse(Hello)
     const category = args.category
     const name = capitalize(args.name)
 
@@ -72,6 +71,3 @@ export const ${componentName} = (props: Props) => {
     )
 }
 `
-
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
-
