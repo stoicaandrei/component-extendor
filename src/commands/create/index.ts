@@ -1,6 +1,7 @@
 import {Args, Command} from '@oclif/core'
 import * as fs from 'node:fs'
 import {capitalize} from '../../utils'
+import {componentFileContent, categoryIndexFileContent} from '../../templates'
 
 export default class Hello extends Command {
   static description = 'Say hello'
@@ -52,22 +53,7 @@ export default class Hello extends Command {
 
     this.log(`creating ${name} folder`)
     fs.mkdirSync(componentDir)
-    fs.writeFileSync(`${componentDir}/index.ts`, indexFileContent(name))
+    fs.writeFileSync(`${componentDir}/index.ts`, categoryIndexFileContent(name))
     fs.writeFileSync(`${componentDir}/${name}.tsx`, componentFileContent(name))
   }
 }
-
-const indexFileContent = (componentName: string) => `export * from './${componentName}'`
-
-const componentFileContent = (componentName: string) => `import React from 'react'
-
-interface ${componentName}Props {};
-
-export const ${componentName} = (props: Props) => {
-    return (
-        <div>
-            ${componentName}
-        </div>
-    )
-}
-`
