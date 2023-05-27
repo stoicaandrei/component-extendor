@@ -1,5 +1,6 @@
 import {Args, Command, Flags} from '@oclif/core'
 import * as fs from 'node:fs'
+import {openai} from '../../services'
 
 export default class Hello extends Command {
   static description = 'Extend a React component'
@@ -29,29 +30,56 @@ export default class Hello extends Command {
 
     const fileContent = fs.readFileSync(filePath, 'utf8')
 
-    const baseFilePath = filePath.replace(/(.*?)\..+/, '$1')
-    const fileExtension = filePath.replace(/.*?\.(.+)/, '$1')
+    const baseFilePath = filePath.replace(/(.*)\..+/, '$1')
+    const fileExtension = filePath.replace(/.*\.(.+)/, '$1')
+    const componentName = baseFilePath.split('/').pop()
 
     if (flags.storybook) {
+      this.log('Creating storybook file')
+
       const storybookFilePath = `${baseFilePath}.stories.${fileExtension}`
       if (fs.existsSync(storybookFilePath)) {
-        this.log(`File ${storybookFilePath} already exists`)
+        this.log('Storybook file already exists')
         return
       }
 
-      this.log('Creating storybook')
-      fs.writeFileSync(storybookFilePath, fileContent)
+      this.log('Generating storybook code')
+      const response = await openai.createCompletion({
+        model: 'text-davinci-003',
+        prompt: `Write a storybook file for the following react component, import it from './${componentName}'
+        
+${fileContent}
+`,
+        max_tokens: 2048,
+      })
+
+      const data = response.data.choices[0].text || ''
+
+      fs.writeFileSync(storybookFilePath, data)
     }
 
     if (flags.jest) {
+      this.log('Creating jest file')
+
       const jestFilePath = `${baseFilePath}.test.${fileExtension}`
       if (fs.existsSync(jestFilePath)) {
         this.log(`File ${jestFilePath} already exists`)
         return
       }
 
-      this.log('Creating jest')
-      fs.writeFileSync(jestFilePath, fileContent)
+      this.log('Generating jest code')
+      const response = await openai.createCompletion({
+        model: 'text-davinci-003',
+        prompt: `Write a jest file for the following react component, import it from './${componentName}'
+
+${fileContent}
+`,
+        max_tokens: 2048,
+      })
+
+      const data = response.data.choices[0].text || ''
+
+      fs.writeFileSync(jestFilePath, data)
     }
 
     this.log('Exntesions finished')
