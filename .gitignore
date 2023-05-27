@@ -11,3 +11,4 @@
 node_modules
 oclif.manifest.json
 .env
+src/services/api-key.ts
