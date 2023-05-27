@@ -1,12 +1,11 @@
-export function componentFileContent(componentName: string): string {
+export function componentFileContent(name: string): string {
   return `import React from 'react'
+import type {${name}Props} from './${name}.types'
 
-interface ${componentName}Props {};
-
-export const ${componentName} = (props: Props) => {
+export const ${name} = (props: ${name}Props) => {
     return (
         <div>
-            ${componentName}
+            ${name}
         </div>
     )
 }

@@ -1,3 +1,3 @@
-export function categoryIndexFileContent(componentName: string): string {
-  return `export * from './${componentName}'`
+export function categoryIndexFileContent(name: string): string {
+  return `export * from './${name}'`
 }
